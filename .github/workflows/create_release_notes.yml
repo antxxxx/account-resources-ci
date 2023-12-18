@@ -30,7 +30,7 @@ on:
 
 jobs:
   create_release_notes:
-    name: Create CF Change Set
+    name: Create release notes
     runs-on: ubuntu-latest
     permissions:
       id-token: write
