@@ -44,9 +44,39 @@ jobs:
         ref: ${{ env.BRANCH_NAME }}
         fetch-depth: 0
     
-    
     - name: Parse Parameters
       id: parse_parameters
       shell: bash
       run: |
         env
+
+    - name: Create Change Set
+      shell: bash
+      run: |
+        env
+      
+    - name: Describe Change Set
+      shell: bash
+      run: |
+        env
+
+    - name: Delete Change Set
+      if: ${{ inputs.execute_change_set == false }}
+      shell: bash
+      run: |
+        env
+ 
+  execute_change_set:
+    name: Execute Change Set
+    if: ${{ inputs.execute_change_set == true }}
+    needs: create_change_set
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Execute Change Set
+        shell: bash
+        run: |
+          env
