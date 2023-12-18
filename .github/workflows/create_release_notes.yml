@@ -1,0 +1,52 @@
+name: Cloudformation Actions
+
+on:
+  workflow_call:
+    inputs:
+      stack_name:
+        required: true
+        type: string
+      template:
+        required: true
+        type: string
+      capabilities:
+        required: true
+        type: string
+      execute_change_set:
+        required: true
+        type: boolean
+      target_environment:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      change_set_version:
+        required: true
+        type: string
+    secrets:
+      cf_deploy_role:
+        required: true
+
+jobs:
+  create_release_notes:
+    name: Create CF Change Set
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      parameters: ${{ steps.parse_parameters.outputs.PARAMETERS }}
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ env.BRANCH_NAME }}
+        fetch-depth: 0
+    
+    - name: Parse Parameters
+      id: parse_parameters
+      shell: bash
+      run: |
+        env
+
