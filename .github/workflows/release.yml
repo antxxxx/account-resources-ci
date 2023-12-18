@@ -102,7 +102,7 @@ jobs:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_dev:
-    needs: [tag_release, release_ci_resources_dev]
+    needs: tag_release
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: dev-account
@@ -114,9 +114,23 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-    
-  release_ci_resources_ref:
+
+  create_release_notes_post_dev:
     needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
+    uses: ./.github/workflows/create_release_notes.yml
+    with:
+      target_environment: dev-account
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      execute_change_set: true
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}      
+
+  release_ci_resources_ref:
+    needs: [tag_release, create_release_notes_post_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref-ci
@@ -130,7 +144,7 @@ jobs:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_ref:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, create_release_notes_post_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: ref-account
@@ -144,7 +158,7 @@ jobs:
       cf_deploy_role: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_ci_resources_qa:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, create_release_notes_post_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa-ci
@@ -158,7 +172,7 @@ jobs:
       cf_deploy_role: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_qa:
-    needs: [tag_release, release_ci_resources_dev, release_account_resources_dev]
+    needs: [tag_release, create_release_notes_post_dev]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: qa-account
@@ -199,8 +213,22 @@ jobs:
     secrets:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
 
-  release_ci_resources_prod:
+  create_release_notes_post_int:
     needs: [tag_release, release_ci_resources_int, release_account_resources_int]
+    uses: ./.github/workflows/create_release_notes.yml
+    with:
+      target_environment: dev-account
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      execute_change_set: true
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}      
+
+  release_ci_resources_prod:
+    needs: [tag_release, create_release_notes_post_int]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: prod-ci
@@ -226,3 +254,17 @@ jobs:
       execute_change_set: true
     secrets:
       cf_deploy_role: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
+
+  create_release_notes_post_prod:
+    needs: [tag_release, release_ci_resources_prod, release_account_resources_prod]
+    uses: ./.github/workflows/create_release_notes.yml
+    with:
+      target_environment: dev-account
+      version: ${{ needs.tag_release.outputs.spec_version }}
+      change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
+      stack_name: account-resources
+      template: ./cloudformation/account_resources.yml
+      capabilities: CAPABILITY_IAM
+      execute_change_set: true
+    secrets:
+      cf_deploy_role: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}      
