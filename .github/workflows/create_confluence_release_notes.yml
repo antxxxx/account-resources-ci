@@ -18,6 +18,9 @@ on:
       MARK_JIRA_RELEASED:
         type: boolean
         default: false
+      TARGET_ENVIRONMENT:
+        required: false
+        type: string
     secrets:
       EXECUTE_RELEASE_NOTES_LAMBDA_ROLE:
         required: true
@@ -32,6 +35,7 @@ on:
 jobs:
   create_confluence_release_notes:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
     permissions:
       id-token: write
       contents: read
