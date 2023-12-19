@@ -195,6 +195,7 @@ jobs:
       CREATE_INT_RC_RELEASE_NOTES: true
       CREATE_PROD_RELEASE_NOTES: false
       MARK_JIRA_RELEASED: false
+      TARGET_ENVIRONMENT: int-ci
     secrets:
       EXECUTE_RELEASE_NOTES_LAMBDA_ROLE: ${{ secrets.EXECUTE_RELEASE_NOTES_LAMBDA_ROLE }}      
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
@@ -202,7 +203,7 @@ jobs:
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}      
     
   release_ci_resources_int:
-    needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
+    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int-ci
@@ -216,7 +217,7 @@ jobs:
       cf_deploy_role: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
   
   release_account_resources_int:
-    needs: [tag_release, release_ci_resources_qa, release_account_resources_qa]
+    needs: [create_release_notes_pre_int, tag_release, release_ci_resources_qa, release_account_resources_qa]
     uses: ./.github/workflows/cloudformation.yml
     with:
       target_environment: int-account
