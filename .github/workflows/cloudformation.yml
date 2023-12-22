@@ -24,8 +24,16 @@ on:
       change_set_version:
         required: true
         type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
     secrets:
       cf_deploy_role:
+        required: false
+      parameter_secrets:
+        required: false
+      cf_create_changeset_role:
         required: true
 
 jobs:

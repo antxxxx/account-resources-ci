@@ -1,0 +1,16 @@
+name: sam package code
+
+on:
+  workflow_call:
+
+jobs:
+  sam_package_code:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: make install
+        run: |
+          env
+

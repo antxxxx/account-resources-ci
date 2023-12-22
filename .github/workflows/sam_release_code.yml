@@ -1,0 +1,55 @@
+name: sam release code
+
+on:
+  workflow_call:
+    inputs:
+      STACK_NAME:
+        required: true
+        type: string
+      ARTIFACT_BUCKET_PREFIX:
+        required: true
+        type: string
+      TARGET_ENVIRONMENT:
+        required: true
+        type: string
+      BUILD_ARTIFACT:
+        required: true
+        type: string
+      VERSION_NUMBER:
+        required: true
+        type: string
+      COMMIT_ID:
+        required: true
+        type: string
+      LOG_LEVEL:
+        required: true
+        type: string
+      LOG_RETENTION_DAYS:
+        required: true
+        type: string
+      dynamic_vars:
+        required: false
+        type: string
+        default: "{}"
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE:
+        required: true
+      parameter_secrets:
+        required: false
+
+jobs:
+  sam_release_code:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Parse Parameters
+        env:
+          parameter_secrets: ${{ secrets.parameter_secrets }}
+          dynamic_vars: ${{ inputs.dynamic_vars }}
+        id: parse_parameters
+        shell: bash
+        run: |
+            env
