@@ -210,7 +210,7 @@ jobs:
     needs: [get_commit_id, package_code, tag_release, deploy_int_stacks]
     uses: ./.github/workflows/release_all_stacks.yml
     with:
-      target_environment: int
+      target_environment: prod
       version: ${{ needs.tag_release.outputs.spec_version }}
       change_set_version: ${{ needs.tag_release.outputs.change_set_version }}
       execute_change_set: true
